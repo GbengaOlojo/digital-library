@@ -1,14 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>Digital Library</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-</head>
-<body>
-    <p>welcome to Digital library</p>
-    <p>we have {{num_books}} book</p>
-</body>
-</html>
+{% extends 'base.html' %} {% block content %}
+<section class='intro-text'>
+<p>welcome to Digital library</p>
+<p>All Books: <strong>{{num_books}} </strong></p> 
+</section>
+
+<section class='top-reads'>
+    {% for book in books %}
+    <a href="{{ book.get_absolute_url }}">
+    <div class='book'>
+        <img class='book-image' src='{{ book.image }}'/>
+        <h3 class='book-title'> {{book.title}} </h3>
+        <h3 class='book-ratings'> Ratings:⭐⭐⭐⭐ </h3>
+    </div>
+</a>
+    {% endfor %}
+</section>
+
+{% if not request.user.is_authenticated %}
+<div id="regModal" class="modal">
+    <div class="modal-body">
+    <button class="close">Close</button>
+    <p>
+        Hello Stranger!
+        You have visited this website {{num_visits}} times. Sign up for a better experience.
+    </p>
+     
+<div a href="% url 'signup' %}" class="popup-signup">Sign up</a>
+
+    {% endif %}
+    {% block script %} 
+    <script>
+    const modal = document.querySelector("#regModal")
+    const modalCloseButton = document.querySelector(".close")
+
+    // when the user clicks the close button
+    modalCloseButton.addEventListener("click", function() {
+        modal.style.display = "none";
+    });
+</script>
+    {% endblock %}
+ 
+</div>
+</div>
+{% endblock %}

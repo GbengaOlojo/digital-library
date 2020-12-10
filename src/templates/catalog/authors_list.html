@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="author-list-container">
+    <h2> Author  ({{ numbers_of_authors }})</h2>
+    <form method="POST" action="" class="search-bar"> 
+        {% csrf_token %}
+
+    <input required type="text" name="author" placeholder="Enter Author name" value="{{ search_item }}" />
+    <button type="Submit"> Search</button>
+</div>
+
+<div class="author-list">
+    <ul>
+        {% for author in authors %}
+        <li><a href="{{ author.get_absolute_url }}">{{author}}</a></li>
+        {% endfor %}
+    </ul>
+ </div>
+</div>
+{% endblock %}

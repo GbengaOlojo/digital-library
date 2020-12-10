@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital library</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+</head>
+<body>
+    <nav>
+        <ul class="nav_directory">
+            <li><a href="{% url 'index' %}">Digi-Library</a></li>
+            <li><a href="{% url 'index' %}">Catalog</a></li>
+            <li><a href="{% url 'author-list' %}">Authors</a></li>
+        </ul>
+            <ul class="nav_authentication">
+                {% if request.user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Logout </a></li>
+                
+                {% else %}
+                <li><a href="{% url 'login' %}">Login </a></li>
+                <li><a href="{% url 'signup' %}">Sign up</a></li>
+
+            {% endif %}
+        </ul>
+    </nav>
+    
+
+    {% block content %} {% endblock %}
+    <!---Scripts-->
+    {% block script %} {% endblock %}
+</body>
+</html>

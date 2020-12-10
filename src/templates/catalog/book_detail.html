@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class='book-detail-info-container'>
+    <img class='image' src='{{book.image }}' />
+    <div class='book-detail--content'>
+      <h2> Title: {{book.title}} </h2>
+      <h2 style="font-weight: lighter">Author: {{book.author}}</h2>
+      <h4>Ratings: ⭐⭐⭐⭐ </h4>
+
+      <p class='book-detail--description'> {{book.summary}}</p>
+      <div class='book-details--action'>
+        {% if copies >= 1 %}
+        <button>Rent book</button>
+        {% else %}
+        <button disabled>Book Unavailable {{copies}} </button>
+        {% endif %}
+    </div>
+    </div>
+</div>
+{% endblock %}

@@ -11,7 +11,7 @@ class Book(models.Model):
     isbn = models.CharField("ISBN",max_length=13, unique=True, help_text='13 characters that identifies a book')
     genres = models.ManyToManyField('Genre', help_text=" Select a genre for this book")
     language = models.ManyToManyField('Language', help_text= 'Select the language for your book')
-
+    image = models.URLField(null=True)
 
     def __str__(self):
         """ This string represent the Model Object """
@@ -19,7 +19,7 @@ class Book(models.Model):
 
     def get_absolute_url(self):
         """ This returns a URL to access a book """
-        return reverse('book.detail', args=[str(self.id)])
+        return reverse('book-detail', args=[str(self.id)])
 
 
 class BookInstance(models.Model):
@@ -44,6 +44,8 @@ class Author(models.Model):
     """ Models reprenting an Author """
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    image=models.URLField(null=True)
+    bio =models.TextField(null=True)
     email = models.EmailField(null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     date_of_death = models.DateField('died', null=True, blank=True)
@@ -52,13 +54,13 @@ class Author(models.Model):
         ordering = ['last_name', 'first_name']
 
     def get_absolute_url(self):
-        return reverse('author-details', args=[str(self.id)])
+        return reverse('author-detail', args=[str(self.id),f"{self.first_name.lower()}-{self.last_name.lower()}"])
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
 class Genre(models.Model):
-    """ Models representing a bokk genfre"""
+    """ Models representing a book genre"""
     name = models.CharField(max_length=100, help_text='enter a book a genre (e.g. romance, fictions)')
     
     def __str__(self):
