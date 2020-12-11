@@ -334,3 +334,9 @@
   align-self: center;
   margin-top: 5px;
 }
+
+/** user profile **/
+.user-profile-container{
+  padding: 50px;
+
+}

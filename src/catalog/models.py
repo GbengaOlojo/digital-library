@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse # 'reverse used to generate URLs by returning a url pattern that matches that instance 
 import uuid # for generating unique ID
+from django.contrib.auth.models import User 
 
 # Create your models here.
 class Book(models.Model):
@@ -20,6 +21,17 @@ class Book(models.Model):
     def get_absolute_url(self):
         """ This returns a URL to access a book """
         return reverse('book-detail', args=[str(self.id)])
+
+class RentedBook(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    book_instance = models..ForeignKey('BookInstance', on_delete=models.PROTECT)
+    status =models.CharField(max_length=1, choices=RENT_BOOK_STATUS)
+
+    def __str__(self):
+        return f"{self.book}"
+
+
+
 
 
 class BookInstance(models.Model):

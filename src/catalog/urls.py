@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import index, Book_detail_view
 from .views import author_list_views, author_detail_view
-from .views import signup
+from .views import user_profile
 
 
 #catalogs

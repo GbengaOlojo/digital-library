@@ -6,9 +6,22 @@ from django.http import Http404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages 
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+@login_required
+def user_profile(request):
+    user_rented_books = RentedBook.objects.filter(user=request.user)
+    return render(
+        request,
+        'profile.html',
+        context={
+            'user': request.user,
+            'rented_books':user_rented_books
+        }
+    )
+
 def index(request):
     """view function for the index page"""
 
@@ -114,9 +127,7 @@ def author_list_views(request):
             'numbers_of_authors' : authors.count()
         }
     )
-        
-
-
+    
 
 
 def author_detail_view(request, pk, slug):
