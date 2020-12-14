@@ -10,11 +10,11 @@
       <p class='book-detail--description'> {{book.summary}}</p>
       <div class='book-details--action'>
         {% if copies >= 1 %}
-        <button>Rent book</button>
+        <a href="{% url 'rent-book' book.pk %}"> Rent Book</a>
         {% else %}
         <button disabled>Book Unavailable {{copies}} </button>
         {% endif %}
     </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %}ß

@@ -2,13 +2,15 @@ from django.db import models
 from django.urls import reverse # 'reverse used to generate URLs by returning a url pattern that matches that instance 
 import uuid # for generating unique ID
 from django.contrib.auth.models import User 
+from .errors import BookDoesNotExist, BookNotAvailable
+from django.utils import timezone
 
 # Create your models here.
 class Book(models.Model):
     """ Model represetation for a book """
     title = models.CharField(max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True) # Books have M21 relationship with
-    summary = models.TextField(max_length=1000, help_text="Enter a  brief descriotion about the book")
+    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
+    summary = models.TextField(max_length=1000, help_text="Enter a  brief description about the book")
     isbn = models.CharField("ISBN",max_length=13, unique=True, help_text='13 characters that identifies a book')
     genres = models.ManyToManyField('Genre', help_text=" Select a genre for this book")
     language = models.ManyToManyField('Language', help_text= 'Select the language for your book')
@@ -23,15 +25,55 @@ class Book(models.Model):
         return reverse('book-detail', args=[str(self.id)])
 
 class RentedBook(models.Model):
+    RENT_BOOK_STATUS = (
+        ('ru',  'Running'),
+        ('re', 'Returned') 
+
+    )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    book_instance = models..ForeignKey('BookInstance', on_delete=models.PROTECT)
-    status =models.CharField(max_length=1, choices=RENT_BOOK_STATUS)
+    book_instance = models.ForeignKey('BookInstance', on_delete=models.PROTECT)
+    status = models.CharField(max_length=2, choices=RENT_BOOK_STATUS)
+
+    
+    @classmethod
+    def user_rentbook(cls, user, book_id):
+        """ This method calls updates a Book_Instance model from (rent --> Returns)"""
+
+        try:
+            # GET BOOK
+            book= Book.objects.get(id=book_id)
+
+            # check for available book instance 
+            available_book_instances = BookInstance.objects.filter(book=book, status='a').order_by("-pk")
+
+            if available_book_instances.count() > 0: 
+
+                # Available
+                # select the First
+                book_instance = available_book_instances[0]
+
+                #update Book Instance to loan
+                book_instance.status = 'o'
+
+                # Due Back in a week (==> 7days)
+                book_instance.due_back = timezone.now() + timezone.timedelta(days=7)
+                book_instance.save(update_fields=[
+                    'status',
+                    'due_back'
+                ])
+                # Create rented Book
+                rented_book = cls.objects.create(status='ru', user=user, book_instance=book_instance)
+                return rented_book
+            
+            else:
+                raise BookNotAvailable(book_title=book.title, book_id=book_id)
+
+        except Book.DoesNotExist:
+            raise BookDoesNotExist(book_id=book_id)
+
 
     def __str__(self):
-        return f"{self.book}"
-
-
-
+        return f"{self.book_instance}"
 
 
 class BookInstance(models.Model):

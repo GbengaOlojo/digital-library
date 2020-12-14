@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from catalog.models import Book, BookInstance, Author
+from catalog.models import Book, BookInstance, Author, RentedBook
 from django.urls import reverse_lazy
 from django.views import generic
 from django.http import Http404
@@ -128,8 +128,6 @@ def author_list_views(request):
         }
     )
     
-
-
 def author_detail_view(request, pk, slug):
     author = get_object_or_404(Author, pk=pk)
     books = Book.objects.filter(author=author)
@@ -142,3 +140,11 @@ def author_detail_view(request, pk, slug):
             "books": books
     }
 )
+
+@login_required
+def rent_book(request, pk):
+    user = request.user
+    RentedBook().user_rentbook(user=user, book_id=pk)
+
+    return redirect(reverse_lazy('user-profile'))
+
