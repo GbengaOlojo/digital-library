@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages 
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 
 # Create your views here.
@@ -147,4 +148,58 @@ def rent_book(request, pk):
     RentedBook().user_rentbook(user=user, book_id=pk)
 
     return redirect(reverse_lazy('user-profile'))
+    
 
+
+def rent_status(self, user, book_id):
+    date_rented = timezone.now()
+    days_running = 0         # numbers of days the book instance or book id has been running
+    
+    if RENT_BOOK_STATUS =='ru' :
+        date_rented += days_running
+        return render(request, 'catalog/book_detail.html', {"book_id":days_running})
+
+
+# reminds user to return book within a day 
+def penul_rem(self):
+    if book_id.days_running == 6:
+        return render(request, 'catalog/book_detail.html', {"book_id":days_running})
+
+
+# notifies user to return book same day 
+def return_today(self):
+    if book_id.days_running == 7:
+        return render(request,'catalog/book_detail.html', {"book_id":due_back})
+ 
+       
+# where due day is elapsed by a day, it will increament days_running 
+def book_overdue(self):
+    if book_id.days_running > 7 :
+        date_rented += days_running
+        return render(request,'catalog/book_detail.html',{'book_id': book_id})
+    
+
+# where the days have elapsed more than 30 days, user profile is suspended 
+def one_month_overdue(self):
+    if book_id.days_running > 30 :
+        user_profile.save(update_fields=[
+            'suspended',
+            'reinstated'
+        ])
+        return render(request,'catalog/book_detail.html',{'user_profile': suspended})
+
+
+# when the user returns the book, user profile is reinstated
+def book_returned(self):
+    if RENT_BOOK_STATUS == 're':
+        user_profile.save(update_fields=[
+            'suspended',
+            'reinstated'
+        ])
+        return render (request,'cataloq/book_detail.html',{'user_profile' : reinstated})
+        
+
+        # else, the book is available to rent
+def book_available(self):
+    return render (request,'cataloq/book_detail.html' ,{'book_id' : Available})
+ 

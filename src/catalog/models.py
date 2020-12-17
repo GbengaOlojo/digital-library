@@ -35,6 +35,10 @@ class RentedBook(models.Model):
     status = models.CharField(max_length=2, choices=RENT_BOOK_STATUS)
 
     
+
+
+
+    
     @classmethod
     def user_rentbook(cls, user, book_id):
         """ This method calls updates a Book_Instance model from (rent --> Returns)"""
