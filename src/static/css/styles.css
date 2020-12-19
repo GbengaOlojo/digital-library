@@ -7,7 +7,7 @@
   
   html,
   body {
-    overflow: hidden;
+    overflow-x: hidden;
     font-family: "Nunito", sans-serif;
   }
   
@@ -274,6 +274,9 @@
   border-radius: 5px;
 }
 
+button:disabled{
+  background-color: rgba(23, 23, 255, 0.5);
+}
 
 .btn {  
   padding: 10px 20px;  
@@ -285,10 +288,12 @@
   font-weight: bold;  
   font-size: 15px;  
   margin-bottom: 10px;
+  cursor: pointer;
 }
 
-
-
+.btn-sm{
+  width: unset
+}
 
 .forgot-password{
   font-size: large;
@@ -321,6 +326,8 @@
   width: 90%;
   align-self: center;
   margin-top: 5px;
+  display: flex;
+  margin-bottom: 10px;
 
   
 }
@@ -333,10 +340,46 @@
   width: 90%;
   align-self: center;
   margin-top: 5px;
+  display: flex;
+  margin-bottom: 10px;
 }
 
 /** user profile **/
 .user-profile-container{
   padding: 50px;
+
+}
+
+.rented-book {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2em;
+  margin-bottom:20px
+
+}
+
+.rented-book--image{
+  width: 80px;
+  height:150px
+}
+
+.rented-book--status-container{
+  margin: 10px 0;
+
+}
+
+.rented-book--status--ru{
+  padding: 5px, 8px;
+  background-color: antiquewhite;
+  border-radius:  5px;
+  font-weight: bold;
+}
+
+.rented-book--status--re{
+  padding: 5px, 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: peru;
 
 }

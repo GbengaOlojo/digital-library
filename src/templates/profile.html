@@ -6,8 +6,33 @@
 
 <div>
 <h3> Rented Books </h3>
+    <!--- messages -->
+    {% if messages %}{% for mesasage in messages %}
+    <span class="form.{{messages.tags}}"> {{ message }}</span>
+     {% endfor %} {% endif %}
+     <!---->
     {% for book in rented_books %}
-    <p> {{ book }}</p>
+    <div class ="rented-book">
+        <img style="rented-book--image" src="{{ book.book_instance.book.image }}" />
+    </div>
+    <p><a href="{% url 'book-detail' book.book_instance.book.id %}"><strong</p> {{book.book_instance.book.title}} </a></strong></p>
+    <p class="text-small">{{ book }}</p>
+    <!-- -->
+    {% if book.status == 'ru' %}
+    <p class="text-small">Due Date: {{ book.book_instance.due_back }}</p>
+    {% endif %}
+    <!---->
+    
+    <p class="text-small rented-book--status-container"><span class="rented-book--status--{{ book.status  }}">{{ book.get_status_display }}</span></p>
+      <!---->
+    {% if book.status == 're' %}
+    <button disbaled class=" btn btn-sm">Return Book</button>
+    {% else %}
+    <button onclick="window.location='/catalog/return-book/{{ book.book_instance.id }}' "class="btn btn-sm"> Return book </button>
+    {% endif%}   
+</div>
+</div>
+
     {% empty %}
     <p> You have not rented a book yet. View our catalog to rent a  book </p>
     {% endfor%}

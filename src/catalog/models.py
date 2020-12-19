@@ -4,6 +4,8 @@ import uuid # for generating unique ID
 from django.contrib.auth.models import User 
 from .errors import BookDoesNotExist, BookNotAvailable
 from django.utils import timezone
+from .errors import UserReantalConflictError
+import json 
 
 # Create your models here.
 class Book(models.Model):
@@ -15,6 +17,9 @@ class Book(models.Model):
     genres = models.ManyToManyField('Genre', help_text=" Select a genre for this book")
     language = models.ManyToManyField('Language', help_text= 'Select the language for your book')
     image = models.URLField(null=True)
+
+ 
+
 
     def __str__(self):
         """ This string represent the Model Object """
@@ -31,12 +36,28 @@ class RentedBook(models.Model):
 
     )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+    book = models.ForeignKey(Book, on_delete=models.PROTECT, null=True)
     book_instance = models.ForeignKey('BookInstance', on_delete=models.PROTECT)
     status = models.CharField(max_length=2, choices=RENT_BOOK_STATUS)
-
     
+    def user_return_book(self,user):
+        if user != self.user:
+           raise UserReantalConflictError(book_instance=self.book_instance)
+        else:
+            #if rented book status is running 
+            if self.status == "ru":
+                # get &update book instance
+                instance = BookInstance.objects.get(id=self.book_instance.id)
+                # update
+                instance.status = 'a' # available
+                instance.save(update_fields=['status'])
 
+                #UPDATE USER RENTED BOOK PROFILE
+                self.status = 're' # returned 
+                self.save(update_fields=['status'])
 
+            #GENERICALLY RETURN SUCCESS (If no error is encountered)
+            return json.loads('{"status": "success"}')
 
     
     @classmethod
@@ -66,7 +87,7 @@ class RentedBook(models.Model):
                     'due_back'
                 ])
                 # Create rented Book
-                rented_book = cls.objects.create(status='ru', user=user, book_instance=book_instance)
+                rented_book = cls.objects.create(status='ru', user=user, book=book, book_instance=book_instance)
                 return rented_book
             
             else:
@@ -120,7 +141,7 @@ class Author(models.Model):
 class Genre(models.Model):
     """ Models representing a book genre"""
     name = models.CharField(max_length=100, help_text='enter a book a genre (e.g. romance, fictions)')
-    
+
     def __str__(self):
         return self.name 
 

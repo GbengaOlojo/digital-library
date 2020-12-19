@@ -8,12 +8,12 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-
+import json 
 
 # Create your views here.
 @login_required
 def user_profile(request):
-    user_rented_books = RentedBook.objects.filter(user=request.user)
+    user_rented_books = RentedBook.objects.filter(user=request.user).order_by('-pk')
     return render(
         request,
         'profile.html',
@@ -145,11 +145,36 @@ def author_detail_view(request, pk, slug):
 @login_required
 def rent_book(request, pk):
     user = request.user
+    book_in_view = get_object_or_404(Book, pk=pk)
+    exisiting_record =  RentedBook.objects.filter(book=book_in_view)
+
+    if exisiting_record.count() > 0:
+        messages.error(
+            request, 
+            f'Book [{book_in_view}] cannot be rented twice'
+        )
+        return redirect(reverse_lazy('user-profile'))
+
     RentedBook().user_rentbook(user=user, book_id=pk)
 
     return redirect(reverse_lazy('user-profile'))
-    
 
+@login_required
+def return_book(request, book_instance):
+    user = request.user
+    
+    rented_book = RentedBook.objects.filter(book_instance=book_instance).last()
+    if return_book.count() < 1:
+        raise Http404('Rented book can not be found')
+    rented_book =rented_book.last
+ 
+    rented_book.user_return_book(user=user)
+
+    messages.success(
+        request, 
+        f'Book [{rented_book.book_instance.book}] returned successfully')
+
+    return redirect(reverse_lazy('user-profile'))
 
 def rent_status(self, user, book_id):
     date_rented = timezone.now()
@@ -202,4 +227,3 @@ def book_returned(self):
         # else, the book is available to rent
 def book_available(self):
     return render (request,'cataloq/book_detail.html' ,{'book_id' : Available})
- 
